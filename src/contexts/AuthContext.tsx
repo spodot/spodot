@@ -286,4 +286,7 @@ export function useAuth() {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-} 
+}
+
+// Fast Refresh 호환성을 위한 별도 export
+export { AuthProvider as default }; 

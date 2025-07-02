@@ -415,3 +415,6 @@ export const useSuggestion = (): SuggestionContextType => {
   }
   return context;
 };
+
+// Fast Refresh 호환성을 위한 별도 export
+export { SuggestionProvider as default };

@@ -481,7 +481,17 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
       logger.debug('태스크 삭제 시작:', id);
       setLoading(true);
 
-      // 직접 Supabase 삭제 호출
+      // 1. 먼저 관련 댓글 삭제
+      const { error: commentsError } = await supabase
+        .from('task_comments')
+        .delete()
+        .eq('task_id', id);
+
+      if (commentsError) {
+        console.warn('업무 댓글 삭제 오류:', commentsError);
+      }
+
+      // 2. 업무 삭제
       const { error } = await supabase
         .from('tasks')
         .delete()
@@ -618,4 +628,7 @@ export const useTask = () => {
   const context = useContext(TaskContext);
   if (!context) throw new Error("useTask must be used within a TaskProvider");
   return context;
-}; 
+};
+
+// Fast Refresh 호환성을 위한 별도 export
+export { TaskProvider as default }; 

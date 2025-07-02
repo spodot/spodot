@@ -31,6 +31,7 @@ export interface Report {
   reviewedAt?: string;
   reviewedBy?: string;
   reviewedByName?: string;
+  reviewNote?: string;
   comments?: ReportComment[];
   attachments?: ReportAttachment[];
   metrics?: {
@@ -125,6 +126,8 @@ interface ReportContextType {
   // 보고서 상태 변경
   submitReport: (id: string) => Promise<boolean>;
   reviewReport: (id: string, reviewerId: string, reviewerName: string, approved: boolean) => Promise<boolean>;
+  approveReport: (id: string, reviewerId: string, reviewerName: string, reviewNote?: string) => Promise<boolean>;
+  rejectReport: (id: string, reviewerId: string, reviewerName: string, reviewNote: string) => Promise<boolean>;
   
   // 보고서 댓글
   addComment: (reportId: string, comment: Omit<ReportComment, 'id' | 'reportId' | 'createdAt'>) => Promise<string | null>;
@@ -310,6 +313,7 @@ export const ReportProvider = ({ children }: { children: ReactNode }) => {
       reviewedAt: supabaseReport.reviewed_at,
       reviewedBy: supabaseReport.reviewed_by,
       reviewedByName: supabaseReport.reviewed_by_name,
+      reviewNote: supabaseReport.review_note,
       comments,
       attachments: [], // 첨부파일은 별도 테이블로 구현 가능
       metrics: supabaseReport.metrics,
@@ -654,9 +658,10 @@ export const ReportProvider = ({ children }: { children: ReactNode }) => {
           assigned_to: reportData.assignedTo,
           assigned_to_name: reportData.assignedToName,
           submitted_at: reportData.submittedAt,
-          reviewed_at: reportData.reviewedAt,
-          reviewed_by: reportData.reviewedBy,
-          reviewed_by_name: reportData.reviewedByName,
+                  reviewed_at: reportData.reviewedAt,
+        reviewed_by: reportData.reviewedBy,
+        reviewed_by_name: reportData.reviewedByName,
+        review_note: reportData.reviewNote,
           metrics: reportData.metrics,
           period_start: reportData.period?.startDate,
           period_end: reportData.period?.endDate,
@@ -767,14 +772,61 @@ export const ReportProvider = ({ children }: { children: ReactNode }) => {
     });
   };
   
-  // 보고서 검토
+    // 보고서 검토
   const reviewReport = async (id: string, reviewerId: string, reviewerName: string, approved: boolean): Promise<boolean> => {
     return await updateReport(id, {
-              status: approved ? 'approved' : 'rejected', 
-              reviewedAt: new Date().toISOString(),
-              reviewedBy: reviewerId,
+      status: approved ? 'approved' : 'rejected', 
+      reviewedAt: new Date().toISOString(),
+      reviewedBy: reviewerId,
       reviewedByName: reviewerName
     });
+  };
+
+  // 보고서 승인
+  const approveReport = async (id: string, reviewerId: string, reviewerName: string, reviewNote?: string): Promise<boolean> => {
+    try {
+      const updates: Partial<Report> = {
+        status: 'approved',
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: reviewerId,
+        reviewedByName: reviewerName
+      };
+
+      // reviewNote가 있으면 추가
+      if (reviewNote && reviewNote.trim()) {
+        updates.reviewNote = reviewNote;
+      }
+
+      return await updateReport(id, updates);
+    } catch (err) {
+      console.error('보고서 승인 중 오류:', err);
+      setError('보고서 승인 중 오류가 발생했습니다.');
+      return false;
+    }
+  };
+
+  // 보고서 반려
+  const rejectReport = async (id: string, reviewerId: string, reviewerName: string, reviewNote: string): Promise<boolean> => {
+    try {
+      if (!reviewNote || !reviewNote.trim()) {
+        setError('반려 사유를 입력해주세요.');
+        return false;
+      }
+
+      const updates: Partial<Report> = {
+        status: 'rejected',
+        reviewedAt: new Date().toISOString(),
+        reviewedBy: reviewerId,
+        reviewedByName: reviewerName,
+        reviewNote: reviewNote
+      };
+
+      return await updateReport(id, updates);
+    } catch (err) {
+      console.error('보고서 반려 중 오류:', err);
+      setError('보고서 반려 중 오류가 발생했습니다.');
+      return false;
+    }
   };
   
   // 댓글 추가
@@ -993,9 +1045,11 @@ export const ReportProvider = ({ children }: { children: ReactNode }) => {
         updateReport,
         deleteReport,
         getReportById,
-        submitReport,
-        reviewReport,
-        addComment,
+            submitReport,
+    reviewReport,
+    approveReport,
+    rejectReport,
+    addComment,
         deleteComment,
         addAttachment,
         deleteAttachment,

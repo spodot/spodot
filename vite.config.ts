@@ -4,11 +4,31 @@ import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react({
+      // Fast Refresh는 기본적으로 활성화됨
+      include: "**/*.{jsx,tsx}",
+      babel: {
+        plugins: []
+      }
+    })
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  // 개발 환경에서 HMR 최적화
+  optimizeDeps: {
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      '@supabase/supabase-js',
+      'lucide-react',
+      'date-fns'
+    ],
+    exclude: ['@vite/client', '@vite/env']
   },
   build: {
     rollupOptions: {
@@ -64,7 +84,10 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
-    open: true
+    open: true,
+    hmr: {
+      overlay: false // HMR 오버레이 비활성화
+    }
   },
   
   // 환경 변수 설정

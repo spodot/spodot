@@ -64,8 +64,15 @@ export const AnnouncementProvider: React.FC<{ children: ReactNode }> = ({ childr
     setLoading(true);
     setError(null);
     try {
-      // 항상 샘플 데이터 사용
-      setAnnouncements(sampleAnnouncements);
+      // localStorage에서 공지사항 데이터 가져오기
+      const storedAnnouncements = localStorage.getItem('announcements');
+      if (storedAnnouncements) {
+        setAnnouncements(JSON.parse(storedAnnouncements));
+      } else {
+        // 처음 실행시에만 샘플 데이터 설정
+        setAnnouncements(sampleAnnouncements);
+        localStorage.setItem('announcements', JSON.stringify(sampleAnnouncements));
+      }
     } catch (err) {
       console.error('Error fetching announcements:', err);
       setError('공지사항을 불러오는 중 오류가 발생했습니다.');
@@ -91,8 +98,10 @@ export const AnnouncementProvider: React.FC<{ children: ReactNode }> = ({ childr
         updatedAt: now
       };
       
-      // 로컬 상태만 업데이트
-      setAnnouncements((prevAnnouncements) => [newAnnouncement, ...prevAnnouncements]);
+      // 로컬 상태 업데이트 및 localStorage에 저장
+      const updatedAnnouncements = [newAnnouncement, ...announcements];
+      setAnnouncements(updatedAnnouncements);
+      localStorage.setItem('announcements', JSON.stringify(updatedAnnouncements));
 
       // 🚀 자동 알림: 공지사항 등록시 대상 역할의 모든 사용자에게 알림
       await notificationService.notifyAnnouncementCreated({
@@ -120,14 +129,14 @@ export const AnnouncementProvider: React.FC<{ children: ReactNode }> = ({ childr
         updatedAt: new Date().toISOString()
       };
       
-      // 로컬 상태 업데이트
-      setAnnouncements((prevAnnouncements) =>
-        prevAnnouncements.map((announcement) =>
-          announcement.id === updatedAnnouncementData.id 
-            ? { ...announcement, ...updates } 
-            : announcement
-        )
+      // 로컬 상태 업데이트 및 localStorage에 저장
+      const updatedAnnouncements = announcements.map((announcement) =>
+        announcement.id === updatedAnnouncementData.id 
+          ? { ...announcement, ...updates } 
+          : announcement
       );
+      setAnnouncements(updatedAnnouncements);
+      localStorage.setItem('announcements', JSON.stringify(updatedAnnouncements));
     } catch (err) {
       console.error('Error updating announcement:', err);
       setError('공지사항 업데이트 중 오류가 발생했습니다.');
@@ -141,10 +150,10 @@ export const AnnouncementProvider: React.FC<{ children: ReactNode }> = ({ childr
     setLoading(true);
     setError(null);
     try {
-      // 로컬 상태 업데이트
-      setAnnouncements((prevAnnouncements) => 
-        prevAnnouncements.filter((announcement) => announcement.id !== id)
-      );
+      // 로컬 상태 업데이트 및 localStorage에 저장
+      const updatedAnnouncements = announcements.filter((announcement) => announcement.id !== id);
+      setAnnouncements(updatedAnnouncements);
+      localStorage.setItem('announcements', JSON.stringify(updatedAnnouncements));
     } catch (err) {
       console.error('Error deleting announcement:', err);
       setError('공지사항 삭제 중 오류가 발생했습니다.');
@@ -168,3 +177,6 @@ export const useAnnouncement = () => {
   }
   return context;
 };
+
+// HMR Fast Refresh 호환성을 위한 기본 export
+export default { AnnouncementProvider, useAnnouncement };

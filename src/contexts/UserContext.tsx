@@ -465,22 +465,43 @@ export function UserProvider({ children }: { children: ReactNode }) {
     try {
       console.log('직원 삭제 시도:', id);
       
-      // 1. 관련 데이터 정리 - 해당 직원에게 할당된 모든 tasks의 assigned_to를 null로 설정
+      // 1. 공지사항 관련 데이터 정리 - 해당 직원이 작성한 공지사항의 작성자를 null로 설정
+      const { error: announcementError } = await supabase
+        .from('announcements')
+        .update({ author_id: null })
+        .eq('author_id', id);
+
+      if (announcementError) {
+        console.warn('공지사항 작성자 정리 오류:', announcementError);
+        // 공지사항 관련 오류는 경고만 출력하고 계속 진행
+      }
+
+      console.log('해당 직원의 공지사항 작성자 정리 완료');
+
+      // 2. 관련 데이터 정리 - 해당 직원에게 할당된 모든 tasks의 assigned_to를 null로 설정
       const { error: tasksError } = await supabase
         .from('tasks')
         .update({ assigned_to: null })
         .eq('assigned_to', id);
 
       if (tasksError) {
-        console.error('업무 재할당 오류:', tasksError);
-        const errorMessage = tasksError.message || '업무 재할당 중 오류가 발생했습니다.';
-        alert('직원 삭제 오류 (업무 재할당): ' + errorMessage);
-        return false;
+        console.warn('업무 재할당 오류:', tasksError);
+        // 업무 재할당 오류는 경고만 출력하고 계속 진행
       }
 
       console.log('해당 직원의 업무 재할당 완료');
 
-      // 2. 보고서 관련 데이터 정리 - 해당 직원이 작성한 보고서의 작성자를 null로 설정
+      // 3. 업무 생성자 정리 - 해당 직원이 생성한 업무의 생성자를 null로 설정
+      const { error: taskCreatorError } = await supabase
+        .from('tasks')
+        .update({ created_by: null })
+        .eq('created_by', id);
+
+      if (taskCreatorError) {
+        console.warn('업무 생성자 정리 오류:', taskCreatorError);
+      }
+
+      // 4. 보고서 관련 데이터 정리 - 해당 직원이 작성한 보고서의 작성자를 null로 설정
       const { error: reportError } = await supabase
         .from('daily_reports')
         .update({ author_id: null })
@@ -488,10 +509,29 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       if (reportError) {
         console.warn('보고서 작성자 정리 오류:', reportError);
-        // 보고서 관련 오류는 경고만 출력하고 계속 진행
       }
 
-      // 3. 알림 데이터 정리 - 해당 직원의 알림 삭제
+      // 5. 건의사항 관련 데이터 정리
+      const { error: suggestionError } = await supabase
+        .from('suggestions')
+        .update({ author_id: null })
+        .eq('author_id', id);
+
+      if (suggestionError) {
+        console.warn('건의사항 작성자 정리 오류:', suggestionError);
+      }
+
+      // 6. 댓글 관련 데이터 정리
+      const { error: commentError } = await supabase
+        .from('task_comments')
+        .update({ author_id: null })
+        .eq('author_id', id);
+
+      if (commentError) {
+        console.warn('댓글 작성자 정리 오류:', commentError);
+      }
+
+      // 7. 알림 데이터 정리 - 해당 직원의 알림 삭제
       const { error: notificationError } = await supabase
         .from('notifications')
         .delete()
@@ -499,10 +539,73 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       if (notificationError) {
         console.warn('알림 삭제 오류:', notificationError);
-        // 알림 삭제 오류는 경고만 출력하고 계속 진행
       }
 
-      // 4. 실제 데이터베이스에서 직원 삭제
+      // 8. 스케줄 관련 데이터 정리
+      const { error: scheduleError } = await supabase
+        .from('schedules')
+        .delete()
+        .eq('trainer_id', id);
+
+      if (scheduleError) {
+        console.warn('스케줄 삭제 오류:', scheduleError);
+      }
+
+      // 9. 직원 팀 관계 정리
+      const { error: staffTeamError } = await supabase
+        .from('staff_teams')
+        .delete()
+        .eq('user_id', id);
+
+      if (staffTeamError) {
+        console.warn('직원 팀 관계 삭제 오류:', staffTeamError);
+      }
+
+      // 10. 매출 데이터 정리 - 해당 직원이 입력한 매출 데이터 정리
+      try {
+        const { error: salesError } = await supabase
+          .from('sales')
+          .delete()
+          .eq('user_id', id);
+
+        if (salesError) {
+          console.warn('매출 데이터 삭제 오류:', salesError);
+        }
+      } catch (salesErr) {
+        console.warn('매출 테이블 정리 중 오류:', salesErr);
+      }
+
+      // 11. 이용권 관리 데이터 정리
+      try {
+        const { error: passesError } = await supabase
+          .from('passes')
+          .delete()
+          .eq('user_id', id);
+
+        if (passesError) {
+          console.warn('이용권 데이터 삭제 오류:', passesError);
+        }
+      } catch (passErr) {
+        console.warn('이용권 테이블 정리 중 오류:', passErr);
+      }
+
+      // 12. 핸드오버 데이터 정리
+      try {
+        const { error: handoverError } = await supabase
+          .from('handovers')
+          .delete()
+          .eq('user_id', id);
+
+        if (handoverError) {
+          console.warn('핸드오버 데이터 삭제 오류:', handoverError);
+        }
+      } catch (handoverErr) {
+        console.warn('핸드오버 테이블 정리 중 오류:', handoverErr);
+      }
+
+      console.log('모든 관련 데이터 정리 완료');
+
+      // 13. 실제 데이터베이스에서 직원 삭제
       const { error: deleteError } = await supabase
         .from('users')
         .delete()
@@ -518,10 +621,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       console.log('직원 삭제 성공:', id);
       alert('직원이 성공적으로 삭제되었습니다.');
 
-      // 5. 로컬 상태에서 제거
+      // 14. 로컬 상태에서 제거
       setStaffList(prevStaff => prevStaff.filter(staff => staff.id !== id));
       
-      // 6. 직원 목록 새로고침
+      // 15. 직원 목록 새로고침
       await fetchStaff();
       
       return true;

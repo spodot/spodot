@@ -132,7 +132,7 @@ export const RealtimeProvider: React.FC<{ children: ReactNode }> = ({ children }
 // 커스텀 훅
 export const useRealtime = (): RealtimeContextType => {
   const context = useContext(RealtimeContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useRealtime must be used within a RealtimeProvider');
   }
   return context;
@@ -154,4 +154,7 @@ export const useRealtimeDebug = () => {
     onlineUsersCount: Object.keys(onlineUsers).length,
     connectionStatus: isConnected ? '연결됨' : '연결 안됨'
   };
-}; 
+};
+
+// Fast Refresh 호환성을 위한 별도 export
+export { RealtimeProvider as default }; 

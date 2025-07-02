@@ -273,7 +273,6 @@ const AnnouncementsManagement: React.FC = () => {
         await addAnnouncement(newAnnouncementData);
       }
       handleCloseModal();
-      fetchAnnouncements(); 
     } catch (saveError) {
       console.error('Failed to save announcement:', saveError);
       alert('공지사항 저장에 실패했습니다.'); 
@@ -284,7 +283,6 @@ const AnnouncementsManagement: React.FC = () => {
     if (window.confirm('정말로 이 공지사항을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
       try {
         await deleteAnnouncement(id);
-        fetchAnnouncements(); 
       } catch (deleteError) {
         console.error('Failed to delete announcement:', deleteError);
         alert('공지사항 삭제에 실패했습니다.'); 

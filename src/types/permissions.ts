@@ -5,7 +5,7 @@ export type UserRole = 'admin' | 'reception' | 'fitness' | 'tennis' | 'golf';
 
 // 세부 직책 정의 (각 부서에서 사용 가능)
 export type UserPosition = 
-  | '팀장' | '부팀장' | '매니저' | '과장'
+  | '팀장' | '부팀장' | '매니저' | '과장' | '임원'
   | '시니어 트레이너' | '트레이너' | '퍼스널 트레이너' | '인턴 트레이너'
   | '리셉션 매니저' | '리셉션 직원'
   | '코치' | '테니스 코치' | '어시스턴트 코치'
@@ -560,6 +560,7 @@ export const departmentNames: Record<UserRole, string> = {
 
 // 직책별 한글 이름과 권한 레벨 정의
 export const positionInfo: Record<UserPosition, { name: string; level: number; canManageTeam: boolean }> = {
+  '임원': { name: '임원', level: 6, canManageTeam: true },
   '팀장': { name: '팀장', level: 5, canManageTeam: true },
   '부팀장': { name: '부팀장', level: 4, canManageTeam: true },
   '매니저': { name: '매니저', level: 4, canManageTeam: true },

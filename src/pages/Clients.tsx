@@ -4,8 +4,9 @@ import { Plus, Search, X, Edit3, Trash2, MoreHorizontal, Settings, Download, Fil
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import clsx from 'clsx';
-import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
+// XLSX와 jsPDF를 동적 import로 변경
+// import * as XLSX from 'xlsx';
+// import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 // 시트 타입 정의
@@ -639,76 +640,90 @@ const Clients = () => {
   };
 
   // Excel 다운로드
-  const downloadExcel = () => {
+  const downloadExcel = async () => {
     if (!activeSheet) return;
     
-    const headers = activeSheet.columns.map(col => col.name);
-    const excelData = [
-      headers,
-      ...filteredData.map(row => 
-        activeSheet.columns.map(col => row[col.id] || '')
-      )
-    ];
-    
-    const ws = XLSX.utils.aoa_to_sheet(excelData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, activeSheet.name);
-    
-    // 컬럼 너비 설정
-    const colWidths = activeSheet.columns.map(col => ({ wch: col.width ? col.width / 8 : 15 }));
-    ws['!cols'] = colWidths;
-    
-    XLSX.writeFile(wb, `${activeSheet.name}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
-    setShowDownloadMenu(false);
+    try {
+      // 동적 import로 XLSX 로드
+      const XLSX = await import('xlsx');
+      
+      const headers = activeSheet.columns.map(col => col.name);
+      const excelData = [
+        headers,
+        ...filteredData.map(row => 
+          activeSheet.columns.map(col => row[col.id] || '')
+        )
+      ];
+      
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, activeSheet.name);
+      
+      // 컬럼 너비 설정
+      const colWidths = activeSheet.columns.map(col => ({ wch: col.width ? col.width / 8 : 15 }));
+      ws['!cols'] = colWidths;
+      
+      XLSX.writeFile(wb, `${activeSheet.name}_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+      setShowDownloadMenu(false);
+    } catch (error) {
+      console.error('Excel 다운로드 오류:', error);
+    }
   };
 
   // PDF 다운로드
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
     if (!activeSheet) return;
     
-    const doc = new jsPDF();
-    
-    // 한글 폰트 설정 (기본 폰트 사용)
-    doc.setFont('helvetica');
-    
-    // 제목 추가
-    doc.setFontSize(16);
-    doc.text(activeSheet.name, 14, 20);
-    doc.setFontSize(10);
-    doc.text(`생성일: ${format(new Date(), 'yyyy-MM-dd HH:mm')}`, 14, 30);
-    doc.text(`총 ${filteredData.length}개 항목`, 14, 36);
-    
-    // 테이블 데이터 준비
-    const headers = activeSheet.columns.map(col => col.name);
-    const tableData = filteredData.map(row => 
-      activeSheet.columns.map(col => row[col.id] || '')
-    );
-    
-    // 테이블 생성
-    (doc as any).autoTable({
-      head: [headers],
-      body: tableData,
-      startY: 45,
-      styles: {
-        fontSize: 8,
-        cellPadding: 2,
-      },
-      headStyles: {
-        fillColor: [59, 130, 246], // blue-500
-        textColor: 255,
-        fontStyle: 'bold',
-      },
-      alternateRowStyles: {
-        fillColor: [248, 250, 252], // slate-50
-      },
-      columnStyles: activeSheet.columns.reduce((acc, col, index) => {
-        acc[index] = { cellWidth: col.width ? col.width / 4 : 'auto' };
-        return acc;
-      }, {} as any),
-    });
-    
-    doc.save(`${activeSheet.name}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-    setShowDownloadMenu(false);
+    try {
+      // 동적 import로 jsPDF 로드
+      const { default: jsPDF } = await import('jspdf');
+      
+      const doc = new jsPDF();
+      
+      // 한글 폰트 설정 (기본 폰트 사용)
+      doc.setFont('helvetica');
+      
+      // 제목 추가
+      doc.setFontSize(16);
+      doc.text(activeSheet.name, 14, 20);
+      doc.setFontSize(10);
+      doc.text(`생성일: ${format(new Date(), 'yyyy-MM-dd HH:mm')}`, 14, 30);
+      doc.text(`총 ${filteredData.length}개 항목`, 14, 36);
+      
+      // 테이블 데이터 준비
+      const headers = activeSheet.columns.map(col => col.name);
+      const tableData = filteredData.map(row => 
+        activeSheet.columns.map(col => row[col.id] || '')
+      );
+      
+      // 테이블 생성
+      (doc as any).autoTable({
+        head: [headers],
+        body: tableData,
+        startY: 45,
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+        },
+        headStyles: {
+          fillColor: [59, 130, 246], // blue-500
+          textColor: 255,
+          fontStyle: 'bold',
+        },
+        alternateRowStyles: {
+          fillColor: [248, 250, 252], // slate-50
+        },
+        columnStyles: activeSheet.columns.reduce((acc, col, index) => {
+          acc[index] = { cellWidth: col.width ? col.width / 4 : 'auto' };
+          return acc;
+        }, {} as any),
+      });
+      
+      doc.save(`${activeSheet.name}_${format(new Date(), 'yyyy-MM-dd')}.pdf`);
+      setShowDownloadMenu(false);
+    } catch (error) {
+      console.error('PDF 다운로드 오류:', error);
+    }
   };
 
   // 편집 가능한 셀 컴포넌트

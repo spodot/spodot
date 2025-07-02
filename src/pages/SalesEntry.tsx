@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Search, Filter, X, Check, AlertCircle, Calendar, User, CreditCard, Edit3, Trash2, MoreVertical, Shield } from 'lucide-react';
+import { Plus, Search, Filter, X, Check, AlertCircle, Calendar, User, CreditCard, Edit3, Trash2, Shield } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import { useUser } from '../contexts/UserContext';
@@ -36,7 +36,7 @@ export default function SalesEntry() {
   const [searchQuery, setSearchQuery] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [selectedPassFilter, setSelectedPassFilter] = useState<string>('');
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
 
   useEffect(() => {
     fetchData();
@@ -165,7 +165,6 @@ export default function SalesEntry() {
     // 관리자만 수정 가능
     if (!isAdmin) {
       setError('수정 권한이 없습니다. 관리자만 매출을 수정할 수 있습니다.');
-      setOpenDropdown(null);
       return;
     }
 
@@ -180,14 +179,12 @@ export default function SalesEntry() {
     setNotes('');
     setEditingId(sale.id);
     setShowForm(true);
-    setOpenDropdown(null);
   };
 
   const handleDelete = async (id: string) => {
     // 관리자만 삭제 가능
     if (!isAdmin) {
       setError('삭제 권한이 없습니다. 관리자만 매출을 삭제할 수 있습니다.');
-      setOpenDropdown(null);
       return;
     }
 
@@ -205,7 +202,6 @@ export default function SalesEntry() {
       // 데이터 새로고침
       await fetchData();
       setSuccess('매출이 성공적으로 삭제되었습니다.');
-      setOpenDropdown(null);
       
       // 성공 메시지 자동 제거
       setTimeout(() => setSuccess(null), 3000);
@@ -549,32 +545,21 @@ export default function SalesEntry() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-center">
                           {isAdmin ? (
-                            <div className="relative">
+                            <div className="flex items-center justify-center space-x-2">
                               <button
-                                onClick={() => setOpenDropdown(openDropdown === sale.id ? null : sale.id)}
-                                className="p-1 rounded-full hover:bg-slate-100 transition-colors"
+                                onClick={() => handleEdit(sale)}
+                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                title="수정"
                               >
-                                <MoreVertical size={16} className="text-slate-400" />
+                                <Edit3 size={16} />
                               </button>
-                              
-                              {openDropdown === sale.id && (
-                                <div className="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg border border-slate-200 z-10">
-                                  <button
-                                    onClick={() => handleEdit(sale)}
-                                    className="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 flex items-center"
-                                  >
-                                    <Edit3 size={14} className="mr-2" />
-                                    수정
-                                  </button>
-                                  <button
-                                    onClick={() => handleDelete(sale.id)}
-                                    className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center"
-                                  >
-                                    <Trash2 size={14} className="mr-2" />
-                                    삭제
-                                  </button>
-                                </div>
-                              )}
+                              <button
+                                onClick={() => handleDelete(sale.id)}
+                                className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                title="삭제"
+                              >
+                                <Trash2 size={16} />
+                              </button>
                             </div>
                           ) : (
                             <div className="flex items-center justify-center" title="관리자만 수정/삭제 가능">
@@ -873,13 +858,7 @@ export default function SalesEntry() {
           )}
         </AnimatePresence>
 
-        {/* 외부 클릭으로 드롭다운 닫기 */}
-        {openDropdown && (
-          <div 
-            className="fixed inset-0 z-5" 
-            onClick={() => setOpenDropdown(null)}
-          />
-        )}
+
       </div>
     </motion.div>
   );

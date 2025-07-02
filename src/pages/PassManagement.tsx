@@ -101,6 +101,18 @@ export default function PassManagement() {
     
     try {
       setLoading(true);
+      
+      // 1. 먼저 관련 매출 데이터 삭제
+      const { error: salesError } = await supabase
+        .from('sales')
+        .delete()
+        .eq('pass_id', id);
+        
+      if (salesError) {
+        console.warn('관련 매출 데이터 삭제 오류:', salesError);
+      }
+      
+      // 2. 이용권 삭제
       const { error } = await supabase
         .from('passes')
         .delete()
