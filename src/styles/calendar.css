@@ -1,0 +1,397 @@
+/* src/styles/calendar.css */
+
+/* React Big Calendar 커스텀 스타일 */
+.rbc-calendar {
+  @apply border border-slate-200 rounded-lg shadow-lg bg-white text-slate-700;
+  font-family: 'Pretendard', sans-serif;
+}
+
+/* Toolbar */
+.rbc-toolbar {
+  @apply p-4 flex flex-col sm:flex-row items-center justify-between border-b border-slate-200;
+}
+
+.rbc-toolbar .rbc-btn-group button {
+  @apply text-slate-600 bg-white hover:bg-slate-100 border border-slate-300;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.rbc-toolbar .rbc-btn-group button.rbc-active {
+  @apply bg-blue-600 text-white hover:bg-blue-700 border-blue-600;
+}
+
+.rbc-toolbar .rbc-btn-group button:not(:last-child) {
+  margin-right: 0.5rem;
+}
+
+.rbc-toolbar-label {
+  @apply text-xl font-bold text-slate-800 my-2 sm:my-0;
+}
+
+/* Headers (Month/Week/Day names) */
+.rbc-header {
+  @apply p-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-500 border-b border-slate-200;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
+  background: #f8fafc;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+/* Month View */
+.rbc-month-view {
+  border: none;
+}
+
+.rbc-month-row {
+  border: none;
+}
+
+.rbc-row-bg {
+    @apply flex-1; /* Ensure background row takes full width */
+}
+
+.rbc-day-bg {
+  @apply flex-1 border-l border-slate-100 py-1 px-0.5;
+}
+.rbc-day-bg:first-child {
+  border-left: none;
+}
+
+.rbc-date-cell {
+  flex: 1;
+  padding: 0.375rem;
+  text-align: right;
+  min-height: 2rem;
+}
+
+.rbc-date-cell .rbc-button-link {
+  @apply text-sm font-medium text-slate-600 no-underline hover:text-blue-600 p-1 rounded-full hover:bg-slate-100;
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  line-height: 1.5rem;
+  text-align: center;
+}
+
+.rbc-today {
+  @apply bg-blue-50; /* Softer highlight for today */
+}
+
+/* Off-range dates (dates from previous/next month) */
+.rbc-off-range-bg {
+  @apply bg-slate-50/70; /* Make them less prominent */
+}
+.rbc-off-range .rbc-button-link {
+  @apply text-slate-400;
+}
+
+
+/* Events */
+.rbc-event {
+  border-radius: 0.375rem;
+  border: none;
+  @apply bg-blue-500 text-white text-xs font-medium px-2 py-1;
+  cursor: pointer;
+  margin-bottom: 2px;
+}
+
+.rbc-event:hover {
+  @apply bg-blue-600;
+}
+
+.rbc-event-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.rbc-event-content {
+  font-size: 0.75rem;
+}
+
+/* Week/Day Views */
+.rbc-time-view .rbc-header {
+    /* Week/Day view headers (e.g., MON 10) */
+    @apply border-b border-slate-200;
+}
+
+.rbc-time-header-content > .rbc-row > .rbc-header {
+    /* Day headers in time view */
+    @apply border-l border-slate-100;
+}
+.rbc-time-header-content > .rbc-row > .rbc-header:first-child {
+    border-left: none;
+}
+
+.rbc-time-content {
+    @apply border-t border-slate-200;
+}
+
+.rbc-time-gutter {
+    @apply border-l-0; /* Remove left border of time gutter if present */
+}
+
+.rbc-timeslot-group {
+    @apply border-b border-slate-200;
+    min-height: 40px;
+}
+
+.rbc-time-slot {
+  /* Individual time slot - usually a child of timeslot-group */
+   @apply border-t border-dotted border-slate-200;
+}
+
+.rbc-time-slot:first-child {
+    /* No top border for the first slot in a group */
+    border-top: none;
+}
+
+.rbc-label.rbc-time-slot {
+    /* Time labels in the gutter */
+    @apply w-full border-collapse border border-slate-200 rounded-lg shadow;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    @apply font-normal text-slate-700 pr-4 text-right flex items-center h-full;
+    font-size: 9px;
+}
+
+.rbc-current-time-indicator {
+    @apply bg-red-500;
+    height: 2px;
+    z-index: 10; /* Ensure it's above events if overlapping */
+}
+
+/* Agenda View */
+.rbc-agenda-view table.rbc-agenda-table {
+  @apply w-full border-collapse border border-slate-200 rounded-lg shadow;
+}
+
+.rbc-agenda-view th {
+  @apply p-3 bg-slate-50 text-left text-sm font-semibold text-slate-700 border-b border-slate-200;
+}
+
+.rbc-agenda-view td {
+  @apply p-3 border-b border-slate-200;
+}
+
+.rbc-agenda-view tr:last-child td {
+  border-bottom: none;
+}
+
+.rbc-agenda-date-cell,
+.rbc-agenda-time-cell {
+    @apply text-slate-600 font-medium;
+}
+
+.rbc-agenda-event-cell .rbc-event {
+    /* Agenda view events might need slightly different styling if desired */
+    background-color: rgba(59, 130, 246, 0.9);
+}
+
+/* Show More Button */
+.rbc-show-more {
+  @apply text-blue-500 hover:text-blue-700 text-xs mt-1 cursor-pointer font-medium;
+  margin-top: 0.25rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+  padding: 2px 4px;
+  background-color: rgba(230, 247, 255, 0.7);
+  border-radius: 4px;
+}
+
+/* Ensure Tailwind processes @apply directives */
+/* This file should be processed by PostCSS with Tailwind CSS plugin */
+
+/* 커스텀 월간 캘린더 스타일 - 겹침 문제 해결 */
+.schedule-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-left: 1px solid #e2e8f0;
+  border-top: 1px solid #e2e8f0;
+}
+
+.schedule-month-cell {
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  min-height: 120px;
+  max-height: 120px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  position: relative;
+}
+
+.schedule-month-cell.today {
+  background-color: #dbeafe;
+  border-color: #3b82f6;
+}
+
+.schedule-month-cell.other-month {
+  background-color: #f8fafc;
+  color: #94a3b8;
+}
+
+.schedule-event-compact {
+  display: block;
+  padding: 1px 4px;
+  margin-bottom: 1px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  line-height: 1.2;
+  height: 16px;
+}
+
+.schedule-event-compact:hover {
+  opacity: 0.8;
+  transform: scale(1.02);
+}
+
+.schedule-event-compact.pt {
+  background-color: #3b82f6;
+}
+
+.schedule-event-compact.ot {
+  background-color: #10b981;
+}
+
+.schedule-event-compact.group {
+  background-color: #8b5cf6;
+}
+
+.schedule-event-compact.consult {
+  background-color: #f59e0b;
+}
+
+.schedule-event-compact.completed {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.schedule-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.schedule-day-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.schedule-day-number.today {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.schedule-day-number.current-month {
+  color: #1f2937;
+}
+
+.schedule-day-number.other-month {
+  color: #9ca3af;
+}
+
+.schedule-day-number:hover {
+  background-color: #f3f4f6;
+}
+
+.schedule-day-number.today:hover {
+  background-color: #2563eb;
+}
+
+.schedule-event-list {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.schedule-more-indicator {
+  font-size: 10px;
+  color: #6b7280;
+  text-align: center;
+  padding: 1px;
+  cursor: pointer;
+  background-color: #f9fafb;
+  border-radius: 2px;
+  border: 1px solid #e5e7eb;
+  margin-top: 1px;
+}
+
+.schedule-more-indicator:hover {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+/* 일정 추가 버튼 스타일 */
+.schedule-add-button {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  border: 1px solid #bfdbfe;
+  background-color: transparent;
+}
+
+.schedule-add-button:hover {
+  background-color: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+  transform: scale(1.1);
+}
+
+/* 스크롤바 스타일링 */
+.schedule-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.schedule-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.schedule-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 2px;
+}
+
+.schedule-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.schedule-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
