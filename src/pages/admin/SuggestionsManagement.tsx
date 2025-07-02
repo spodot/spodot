@@ -13,7 +13,8 @@ import {
   CheckCircle, 
   AlertTriangle,
   Filter,
-  Search
+  Search,
+  Trash2
 } from 'lucide-react';
 
 const getStatusDisplayName = (status: SuggestionStatus) => {
@@ -35,11 +36,13 @@ const getStatusBadgeClass = (status: SuggestionStatus) => {
 };
 
 const AdminSuggestionsManagement: React.FC = () => {
-  const { suggestions, updateSuggestionReply } = useSuggestion();
+  const { suggestions, updateSuggestionReply, deleteSuggestion } = useSuggestion();
   const { user: currentUser } = useAuth();
 
   const [isReplyModalOpen, setIsReplyModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedSuggestion, setSelectedSuggestion] = useState<Suggestion | null>(null);
+  const [suggestionToDelete, setSuggestionToDelete] = useState<Suggestion | null>(null);
   const [replyContent, setReplyContent] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | SuggestionStatus>('all');
   const [filterType, setFilterType] = useState<'all' | 'staff' | 'customer'>('all');
@@ -89,6 +92,28 @@ const AdminSuggestionsManagement: React.FC = () => {
       alert('답변이 저장되었습니다.');
     } else {
       alert('선택된 건의사항이 없거나 사용자 정보가 없습니다.');
+    }
+  };
+
+  const handleOpenDeleteModal = (suggestion: Suggestion) => {
+    setSuggestionToDelete(suggestion);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setSuggestionToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (suggestionToDelete) {
+      const success = await deleteSuggestion(suggestionToDelete.id);
+      if (success) {
+        alert('건의사항이 삭제되었습니다.');
+        handleCloseDeleteModal();
+      } else {
+        alert('건의사항 삭제 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -287,27 +312,37 @@ const AdminSuggestionsManagement: React.FC = () => {
                       </span>
                     </td>
                     <td className="py-4 text-center">
-                      <button 
-                        onClick={() => handleOpenReplyModal(suggestion)} 
-                        className={`inline-flex items-center px-3 py-1 text-sm rounded-md transition-colors ${
-                          suggestion.status === 'answered' 
-                            ? 'text-green-700 bg-green-100 hover:bg-green-200' 
-                            : 'text-blue-700 bg-blue-100 hover:bg-blue-200'
-                        }`}
-                        title={suggestion.status === 'answered' ? "답변 보기/수정" : "답변하기"}
-                      >
-                        {suggestion.status === 'answered' ? (
-                          <>
-                            <Eye size={14} className="mr-1"/>
-                            답변 보기
-                          </>
-                        ) : (
-                          <>
-                            <MessageSquare size={14} className="mr-1"/>
-                            답변하기
-                          </>
-                        )}
-                      </button>
+                      <div className="flex items-center justify-center space-x-2">
+                        <button 
+                          onClick={() => handleOpenReplyModal(suggestion)} 
+                          className={`inline-flex items-center px-3 py-1 text-sm rounded-md transition-colors ${
+                            suggestion.status === 'answered' 
+                              ? 'text-green-700 bg-green-100 hover:bg-green-200' 
+                              : 'text-blue-700 bg-blue-100 hover:bg-blue-200'
+                          }`}
+                          title={suggestion.status === 'answered' ? "답변 보기/수정" : "답변하기"}
+                        >
+                          {suggestion.status === 'answered' ? (
+                            <>
+                              <Eye size={14} className="mr-1"/>
+                              답변 보기
+                            </>
+                          ) : (
+                            <>
+                              <MessageSquare size={14} className="mr-1"/>
+                              답변하기
+                            </>
+                          )}
+                        </button>
+                        
+                        <button
+                          onClick={() => handleOpenDeleteModal(suggestion)}
+                          className="inline-flex items-center px-2 py-1 text-sm text-red-700 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                          title="건의사항 삭제"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -408,6 +443,51 @@ const AdminSuggestionsManagement: React.FC = () => {
                 className="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 border border-transparent rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 답변 저장
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteModalOpen && suggestionToDelete && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+        >
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 w-10 h-10 mx-auto bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">건의사항 삭제</h3>
+                <p className="text-sm text-gray-500">이 작업은 되돌릴 수 없습니다.</p>
+              </div>
+            </div>
+            
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm font-medium text-gray-900 mb-1">{suggestionToDelete.title}</p>
+              <p className="text-xs text-gray-600 line-clamp-2">{suggestionToDelete.content}</p>
+            </div>
+            
+            <p className="text-sm text-gray-600 mb-6">
+              정말로 이 건의사항을 삭제하시겠습니까?
+            </p>
+            
+            <div className="flex space-x-3">
+              <button
+                type="button"
+                onClick={handleCloseDeleteModal}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-colors"
+              >
+                취소
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 border border-transparent rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
+              >
+                삭제
               </button>
             </div>
           </div>

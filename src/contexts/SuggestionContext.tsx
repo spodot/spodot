@@ -45,6 +45,7 @@ interface SuggestionContextType {
   getSuggestionById: (id: string) => Suggestion | undefined;
   addSuggestion: (title: string, content: string, createdBy: User | null, type?: 'staff' | 'customer', category?: string) => Promise<string | null>;
   updateSuggestionReply: (suggestionId: string, reply: string, repliedBy: User) => Promise<boolean>;
+  deleteSuggestion: (suggestionId: string) => Promise<boolean>;
   saveDraft: (draft: DraftSuggestion) => void;
   clearDraft: () => void;
   loadDraft: () => DraftSuggestion | null;
@@ -364,6 +365,29 @@ export const SuggestionProvider: React.FC<{ children: ReactNode }> = ({ children
     }
   };
 
+  const deleteSuggestion = async (suggestionId: string): Promise<boolean> => {
+    try {
+      const { error: deleteError } = await supabase
+        .from('suggestions')
+        .delete()
+        .eq('id', suggestionId);
+
+      if (deleteError) {
+        console.error('건의사항 삭제 실패:', deleteError);
+        setError('건의사항 삭제 중 오류가 발생했습니다.');
+        return false;
+      }
+
+      // 상태 업데이트
+      await fetchSuggestions();
+      return true;
+    } catch (err) {
+      console.error('건의사항 삭제 중 오류:', err);
+      setError('건의사항 삭제 중 오류가 발생했습니다.');
+      return false;
+    }
+  };
+
   const saveDraft = (draft: DraftSuggestion) => {
     const draftWithTimestamp = {
       ...draft,
@@ -394,6 +418,7 @@ export const SuggestionProvider: React.FC<{ children: ReactNode }> = ({ children
     getSuggestionById,
     addSuggestion,
     updateSuggestionReply,
+    deleteSuggestion,
     saveDraft,
     clearDraft,
     loadDraft,
