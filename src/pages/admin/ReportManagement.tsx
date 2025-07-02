@@ -25,37 +25,44 @@ const ReportManagement = () => {
     author: 'all'
   });
 
-  // 일일 보고서 데이터 (localStorage에서 가져오기)
+  // 일일 보고서 데이터 (실제 수파베이스 데이터에서 가져오기)
   const getDailyReports = () => {
-    const reports = [];
-    const keys = Object.keys(localStorage);
-    
-    for (const key of keys) {
-      if (key.startsWith('dailyReport_draft_')) {
+    return reports
+      .filter(report => 
+        report.type === 'daily' && 
+        (!dailyReportFilter.date || 
+         new Date(report.createdAt).toISOString().split('T')[0] === dailyReportFilter.date)
+      )
+      .map(report => {
         try {
-          const data = JSON.parse(localStorage.getItem(key) || '{}');
-          const date = key.replace('dailyReport_draft_', '');
-          
-          if (!dailyReportFilter.date || date === dailyReportFilter.date) {
-            reports.push({
-              id: key,
-              date,
-              title: data.title || '제목 없음',
-              completed: data.completed || '',
-              inProgress: data.inProgress || '',
-              planned: data.planned || '',
-              issues: data.issues || '',
-              lastSaved: data.lastSaved,
-              author: '직원' // 실제로는 사용자 정보를 가져와야 함
-            });
-          }
+          const parsedContent = JSON.parse(report.content);
+          return {
+            id: report.id,
+            date: new Date(report.createdAt).toISOString().split('T')[0],
+            title: report.title,
+            completed: parsedContent.완료한업무 || '',
+            inProgress: parsedContent.진행중인업무 || '',
+            planned: parsedContent.예정된업무 || '',
+            issues: parsedContent.특이사항및건의사항 || '',
+            lastSaved: report.updatedAt,
+            author: report.createdByName
+          };
         } catch (error) {
-          console.error('일일 보고서 파싱 오류:', error);
+          console.error('보고서 파싱 오류:', error);
+          return {
+            id: report.id,
+            date: new Date(report.createdAt).toISOString().split('T')[0],
+            title: report.title,
+            completed: report.content,
+            inProgress: '',
+            planned: '',
+            issues: '',
+            lastSaved: report.updatedAt,
+            author: report.createdByName
+          };
         }
-      }
-    }
-    
-    return reports.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      })
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   };
 
   const handleSelectReport = (report: Report) => {
@@ -198,8 +205,11 @@ const ReportManagement = () => {
                     
                     <button
                       onClick={() => {
-                        // 상세 보기 모달 열기
-                        alert(`${report.title} 상세 내용:\n\n완료 업무:\n${report.completed}\n\n진행 업무:\n${report.inProgress}\n\n예정 업무:\n${report.planned}\n\n특이사항:\n${report.issues}`);
+                        // 실제 보고서 찾아서 상세 모달 열기
+                        const actualReport = reports.find(r => r.id === report.id);
+                        if (actualReport) {
+                          handleSelectReport(actualReport);
+                        }
                       }}
                       className="btn btn-outline btn-sm inline-flex items-center"
                     >

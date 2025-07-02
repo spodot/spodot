@@ -87,6 +87,11 @@ export default defineConfig({
     open: true,
     hmr: {
       overlay: false // HMR 오버레이 비활성화
+    },
+    // 개발 환경에서 CSP 관련 헤더 설정
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'cross-origin',
+      'Cross-Origin-Opener-Policy': 'same-origin'
     }
   },
   

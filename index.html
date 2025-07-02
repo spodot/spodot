@@ -5,8 +5,24 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>스포닷 센터 관리 시스템</title>
+    
     <!-- 프리텐다드 폰트 -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+    
+    <!-- 개발 환경에서는 CSP를 비활성화하거나 매우 관대하게 설정 -->
+    <script>
+      // 개발 환경 감지
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        // 개발 환경: CSP 비활성화
+        console.log('🔧 개발 환경: CSP 제한 완화');
+      } else {
+        // 프로덕션 환경: 엄격한 CSP 적용
+        const meta = document.createElement('meta');
+        meta.httpEquiv = 'Content-Security-Policy';
+        meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; worker-src 'self' blob:; frame-src 'self';";
+        document.head.appendChild(meta);
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

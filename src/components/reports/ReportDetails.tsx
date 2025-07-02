@@ -20,9 +20,9 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
   const [newComment, setNewComment] = useState('');
   const [showReviewForm, setShowReviewForm] = useState(false);
   
-  const isAuthor = user?.id === report.authorId;
+  const isAuthor = user?.id === report.createdBy;
   const isAdmin = user?.role === 'admin';
-  const canReview = isAdmin && report.status === 'submitted';
+  const canReview = user?.role === 'admin' && report.status === 'submitted';
   
   // 보고서 제출
   const handleSubmit = () => {
@@ -33,28 +33,32 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
   
   // 보고서 승인
   const handleApprove = () => {
-    if (!user) return;
-    
-    approveReport(report.id, user.id, user.name, reviewNote);
-    setReviewNote('');
-    setShowReviewForm(false);
+    if (user) {
+      approveReport(report.id, user.id, user.name || user.email, reviewNote);
+      setShowReviewForm(false);
+      setReviewNote('');
+    }
   };
   
   // 보고서 반려
   const handleReject = () => {
-    if (!user || !reviewNote.trim()) return;
-    
-    rejectReport(report.id, user.id, user.name, reviewNote);
-    setReviewNote('');
-    setShowReviewForm(false);
+    if (user && reviewNote.trim()) {
+      rejectReport(report.id, user.id, user.name || user.email, reviewNote);
+      setShowReviewForm(false);
+      setReviewNote('');
+    }
   };
   
   // 댓글 추가
   const handleAddComment = () => {
-    if (!newComment.trim() || !user) return;
-    
-    addComment(report.id, newComment, user.id, user.name);
-    setNewComment('');
+    if (user && newComment.trim()) {
+      addComment(report.id, {
+        content: newComment,
+        createdBy: user.id,
+        createdByName: user.name || user.email
+      });
+      setNewComment('');
+    }
   };
   
   // 보고서 삭제
@@ -71,6 +75,9 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
       case 'daily': return '일일 보고서';
       case 'weekly': return '주간 보고서';
       case 'monthly': return '월간 보고서';
+      case 'performance': return '성과 보고서';
+      case 'incident': return '사건 보고서';
+      case 'custom': return '커스텀 보고서';
     }
   };
   
@@ -79,6 +86,7 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
     switch (status) {
       case 'draft': return '작성 중';
       case 'submitted': return '제출됨';
+      case 'reviewed': return '검토됨';
       case 'approved': return '승인됨';
       case 'rejected': return '반려됨';
     }
@@ -91,6 +99,8 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
         return 'bg-slate-100 text-slate-800';
       case 'submitted':
         return 'bg-blue-100 text-blue-800';
+      case 'reviewed':
+        return 'bg-purple-100 text-purple-800';
       case 'approved':
         return 'bg-green-100 text-green-800';
       case 'rejected':
@@ -180,7 +190,7 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
               <User size={18} className="mr-2 text-primary flex-shrink-0" />
               <div>
                 <span className="block text-sm font-medium text-slate-500">작성자</span>
-                <span>{report.authorName || '작성자'}</span>
+                <span>{report.createdByName || '작성자'}</span>
               </div>
             </div>
             
@@ -201,7 +211,7 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
             </div>
           </div>
           
-          {(report.status === 'approved' || report.status === 'rejected') && report.reviewerName && (
+          {(report.status === 'approved' || report.status === 'rejected') && report.reviewedByName && (
             <div className={clsx(
               "mb-6 p-4 rounded-lg",
               report.status === 'approved' ? "bg-green-50" : "bg-red-50"
@@ -214,7 +224,7 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
                   {report.status === 'approved' ? <CheckCircle size={16} /> : <AlertCircle size={16} />}
                 </span>
                 <div>
-                  <span className="font-medium text-slate-900">{report.reviewerName}</span>
+                  <span className="font-medium text-slate-900">{report.reviewedByName}</span>
                   <span className="text-sm text-slate-500 ml-2">
                     {report.reviewedAt && format(parseISO(report.reviewedAt), 'yyyy년 M월 d일 HH:mm', { locale: ko })}
                   </span>
@@ -228,7 +238,88 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
           )}
           
           <div className="mb-6 p-6 bg-slate-50 rounded-lg">
-            <p className="text-slate-700 whitespace-pre-wrap">{report.content}</p>
+            {(() => {
+              try {
+                // JSON 문자열인지 확인하고 파싱
+                const parsedContent = JSON.parse(report.content);
+                
+                // 일일 보고서 형태인 경우
+                if (parsedContent.완료한업무 || parsedContent.진행중인업무 || parsedContent.예정된업무 || parsedContent.특이사항및건의사항) {
+                  return (
+                    <div className="space-y-4">
+                      {parsedContent.완료한업무 && (
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                          <h4 className="text-lg font-semibold text-green-800 mb-2 flex items-center">
+                            <CheckCircle size={18} className="mr-2" />
+                            완료한 업무
+                          </h4>
+                          <p className="text-green-700 whitespace-pre-wrap">{parsedContent.완료한업무}</p>
+                        </div>
+                      )}
+                      
+                      {parsedContent.진행중인업무 && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <h4 className="text-lg font-semibold text-blue-800 mb-2 flex items-center">
+                            <Clock size={18} className="mr-2" />
+                            진행 중인 업무
+                          </h4>
+                          <p className="text-blue-700 whitespace-pre-wrap">{parsedContent.진행중인업무}</p>
+                        </div>
+                      )}
+                      
+                      {parsedContent.예정된업무 && (
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                          <h4 className="text-lg font-semibold text-yellow-800 mb-2 flex items-center">
+                            <Calendar size={18} className="mr-2" />
+                            예정된 업무
+                          </h4>
+                          <p className="text-yellow-700 whitespace-pre-wrap">{parsedContent.예정된업무}</p>
+                        </div>
+                      )}
+                      
+                      {parsedContent.특이사항및건의사항 && (
+                        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                          <h4 className="text-lg font-semibold text-purple-800 mb-2 flex items-center">
+                            <AlertCircle size={18} className="mr-2" />
+                            특이사항 및 건의사항
+                          </h4>
+                          <p className="text-purple-700 whitespace-pre-wrap">{parsedContent.특이사항및건의사항}</p>
+                        </div>
+                      )}
+                      
+                      {(parsedContent.첨부이미지?.length > 0 || parsedContent.첨부파일?.length > 0) && (
+                        <div className="bg-slate-100 border border-slate-200 rounded-lg p-4">
+                          <h4 className="text-lg font-semibold text-slate-800 mb-2">첨부 파일</h4>
+                          {parsedContent.첨부이미지?.length > 0 && (
+                            <p className="text-slate-600">📷 첨부 이미지: {parsedContent.첨부이미지.length}개</p>
+                          )}
+                          {parsedContent.첨부파일?.length > 0 && (
+                            <p className="text-slate-600">📎 첨부 파일: {parsedContent.첨부파일.length}개</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                
+                // 다른 JSON 형태인 경우 키-값 쌍으로 표시
+                return (
+                  <div className="space-y-3">
+                    {Object.entries(parsedContent).map(([key, value]) => (
+                      <div key={key} className="border-b border-slate-200 pb-2">
+                        <span className="font-medium text-slate-700">{key}: </span>
+                        <span className="text-slate-600">
+                          {typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              } catch {
+                // JSON이 아닌 경우 원본 텍스트 표시
+                return <p className="text-slate-700 whitespace-pre-wrap">{report.content}</p>;
+              }
+            })()}
           </div>
           
           {/* 작성자이고 초안 상태일 때만 제출 버튼 표시 */}
@@ -305,10 +396,10 @@ const ReportDetails = ({ report, onClose, onEdit }: ReportDetailsProps) => {
                     <div className="flex justify-between items-start">
                       <div className="flex items-center">
                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-medium">
-                          {comment.authorName.charAt(0)}
+                          {comment.createdByName.charAt(0)}
                         </div>
                         <div className="ml-2">
-                          <span className="font-medium text-slate-900">{comment.authorName}</span>
+                          <span className="font-medium text-slate-900">{comment.createdByName}</span>
                           <span className="text-xs text-slate-500 ml-2">
                             {format(parseISO(comment.createdAt), 'yyyy.MM.dd HH:mm', { locale: ko })}
                           </span>

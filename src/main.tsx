@@ -41,6 +41,27 @@ if (process.env.NODE_ENV === 'development') {
   observer.observe({ entryTypes: ['navigation'] });
 }
 
+// 개발 환경에서 CSP 경고 무시
+if (import.meta.env.DEV) {
+  // CSP 관련 콘솔 에러 필터링
+  const originalError = console.error;
+  console.error = (...args) => {
+    if (
+      args[0] && 
+      typeof args[0] === 'string' && 
+      (args[0].includes('Content Security Policy') || 
+       args[0].includes('eval') ||
+       args[0].includes('unsafe-eval'))
+    ) {
+      // CSP 관련 에러는 개발 환경에서 무시
+      return;
+    }
+    originalError.apply(console, args);
+  };
+  
+  console.log('🔧 개발 모드: CSP 경고 필터링 활성화');
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ErrorBoundary>
