@@ -768,8 +768,8 @@ const DailyReport = () => {
 
       {/* Report Detail Modal */}
       {showDetailModal && selectedReport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[calc(100vh-4rem)] overflow-hidden my-8">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-slate-200">
               <div className="flex items-center space-x-3">

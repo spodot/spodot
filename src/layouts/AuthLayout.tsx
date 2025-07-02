@@ -1,5 +1,4 @@
 import { Outlet } from 'react-router-dom';
-import { Dumbbell } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const AuthLayout = () => {
@@ -13,9 +12,8 @@ const AuthLayout = () => {
       >
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Dumbbell size={40} className="text-primary" />
+            <img src="/spodot/logo/spodot.svg" alt="Spodot Logo" className="h-14 w-auto" />
           </div>
-          <h1 className="text-3xl font-bold text-slate-900">피트니스 센터 관리</h1>
           <p className="text-slate-600 mt-2">
             스포닷 센터 관리 시스템
           </p>

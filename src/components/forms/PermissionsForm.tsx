@@ -53,8 +53,8 @@ const PermissionsForm: React.FC<PermissionsFormProps> = ({ staff, onClose }) => 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-xl font-bold text-slate-800 flex items-center">
             <KeyRound size={20} className="mr-2 text-purple-500" />

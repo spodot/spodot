@@ -454,8 +454,8 @@ const Suggestions = () => {
 
       {/* 상세보기 모달 */}
       {isDetailModalOpen && selectedSuggestion && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
             <div className="flex justify-between items-start mb-4">
               <h3 className="text-2xl font-semibold text-slate-800">건의사항 상세</h3>
               <button 

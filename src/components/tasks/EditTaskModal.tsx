@@ -113,8 +113,8 @@ const EditTaskModal: React.FC<EditTaskModalProps> = ({ task, isOpen, onClose, on
   const activeStaff = staffList?.filter(staff => staff.status === 'active') || [];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 overflow-y-auto p-4">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
         <div className="flex justify-between items-center p-6 border-b border-slate-200">
           <h2 className="text-xl font-bold text-slate-900">업무 수정</h2>
           <button

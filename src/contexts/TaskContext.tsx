@@ -77,9 +77,9 @@ interface TaskContextType {
   error: string | null;
   filterTasks: (options: TaskFilterOptions) => void;
   addTask: (task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => Promise<string | null>;
-  updateTask: (id: string, updatedData: Partial<Task>) => Promise<boolean>;
-  deleteTask: (id: string) => Promise<boolean>;
-  addComment: (taskId: string, comment: Omit<TaskComment, 'id' | 'createdAt'>) => Promise<boolean>;
+  updateTask: (id: string, updatedData: Partial<Task>) => Promise<void>;
+  deleteTask: (id: string) => Promise<void>;
+  addComment: (taskId: string, content: string) => Promise<void>;
   addAttachment: (taskId: string, attachment: Omit<TaskAttachment, 'id'>) => void;
   deleteAttachment: (taskId: string, attachmentId: string) => void;
   fetchTasks: () => Promise<void>;
@@ -422,7 +422,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
   }, [user, convertSupabaseTaskToTask, fetchTasks]);
 
   // 업무 수정
-  const updateTask = async (id: string, updates: Partial<TaskFormData>): Promise<void> => {
+  const updateTask = async (id: string, updates: Partial<Task>): Promise<void> => {
     if (!user) {
       handleError(new Error('로그인이 필요합니다'), {
         action: 'update_task',
@@ -436,17 +436,29 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
       logger.debug('태스크 업데이트 시작:', { id, updates });
       setLoading(true);
 
-      const result = await withRetry(
-        () => supabaseApiService.tasks.update(id, updates),
-        3,
-        1000,
-        { action: 'update_task', userId: user.id, userRole: user.role }
-      );
+      // 직접 Supabase 업데이트 호출
+      const { error } = await supabase
+        .from('tasks')
+        .update({
+          title: updates.title,
+          description: updates.description,
+          status: updates.status === 'in-progress' ? 'in_progress' : updates.status,
+          priority: updates.priority,
+          category: updates.category,
+          assigned_to: updates.assignedTo?.[0],
+          due_date: updates.dueDate,
+          start_time: updates.startTime,
+          end_time: updates.endTime,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id);
 
-      if (result) {
-        await fetchTasks();
-        showSuccess('업무가 성공적으로 업데이트되었습니다.');
+      if (error) {
+        throw new Error(error.message);
       }
+
+      await fetchTasks();
+      showSuccess('업무가 성공적으로 업데이트되었습니다.');
     } catch (error) {
       handleApiError(error, 'update_task', user.id, user.role);
     } finally {
@@ -469,12 +481,15 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
       logger.debug('태스크 삭제 시작:', id);
       setLoading(true);
 
-      await withRetry(
-        () => supabaseApiService.tasks.delete(id),
-        2,
-        1000,
-        { action: 'delete_task', userId: user.id, userRole: user.role }
-      );
+      // 직접 Supabase 삭제 호출
+      const { error } = await supabase
+        .from('tasks')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        throw new Error(error.message);
+      }
 
       await fetchTasks();
       showSuccess('업무가 성공적으로 삭제되었습니다.');
@@ -511,7 +526,7 @@ export const TaskProvider = ({ children }: { children: ReactNode }) => {
         { action: 'add_comment', userId: user.id, userRole: user.role }
       );
 
-      await fetchTaskComments(taskId);
+      await fetchTasks(); // 전체 업무 목록 새로고침
       showSuccess('댓글이 추가되었습니다.');
     } catch (error) {
       handleApiError(error, 'add_comment', user.id, user.role);

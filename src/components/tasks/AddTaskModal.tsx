@@ -112,8 +112,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, initialDue
   const activeStaff = staffList?.filter(staff => staff.status === 'active') || [];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-lg max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-slate-700">새 업무 추가</h2>
           <button onClick={onClose} className="text-slate-500 hover:text-slate-700">

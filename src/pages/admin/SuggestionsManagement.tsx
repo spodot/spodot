@@ -321,9 +321,9 @@ const AdminSuggestionsManagement: React.FC = () => {
       {isReplyModalOpen && selectedSuggestion && (
         <div 
           id="reply-modal-overlay"
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 transition-opacity duration-300 ease-in-out"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 transition-opacity duration-300 ease-in-out overflow-y-auto"
         >
-          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto relative transform transition-all duration-300 ease-in-out scale-100">
+          <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-3xl max-h-[calc(100vh-4rem)] overflow-y-auto relative transform transition-all duration-300 ease-in-out scale-100 my-8">
             <button 
               onClick={handleCloseReplyModal} 
               className="absolute top-4 right-4 text-slate-500 hover:text-slate-700 transition-colors"

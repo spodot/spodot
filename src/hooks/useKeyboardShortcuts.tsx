@@ -84,8 +84,8 @@ export const KeyboardShortcutsHelp: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-96 overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-slate-900">키보드 단축키</h3>

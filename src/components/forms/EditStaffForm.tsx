@@ -150,8 +150,8 @@ const EditStaffForm: React.FC<EditStaffFormProps> = ({ staff, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-xl font-bold text-slate-800 flex items-center">
             <User size={20} className="mr-2 text-blue-500" />

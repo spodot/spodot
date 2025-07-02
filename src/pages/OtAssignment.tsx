@@ -83,8 +83,8 @@ const AddOTMemberModal = ({ isOpen, onClose }: AddOTMemberModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50 overflow-y-auto">
+      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 className="text-xl font-bold text-gray-900 flex items-center">
             <UserPlus size={20} className="mr-2 text-blue-500" />
@@ -882,8 +882,8 @@ export default function OtAssignment() {
 
       {/* 진행 상황 상세 모달 */}
       {showProgressModal && otProgress[showProgressModal] && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
             <div className="p-6 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-xl font-bold text-gray-900">OT 진행 상황</h3>
               <button
@@ -1098,8 +1098,8 @@ export default function OtAssignment() {
         if (!selectedStaff) return null;
 
         return (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-            <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 z-50 flex items-start justify-center p-4 bg-black bg-opacity-50 overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[calc(100vh-4rem)] overflow-y-auto my-8">
               <div className="p-6 border-b border-gray-200 flex justify-between items-center">
                 <h3 className="text-xl font-bold text-gray-900">담당자 상세 정보</h3>
                 <button

@@ -19,9 +19,9 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300 ease-in-out">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-50 transition-opacity duration-300 ease-in-out overflow-y-auto p-4">
       <div 
-        className={`bg-white rounded-lg shadow-xl transform transition-all sm:w-full ${sizeClasses[size]} p-6 space-y-4`}
+        className={`bg-white rounded-lg shadow-xl transform transition-all sm:w-full ${sizeClasses[size]} p-6 space-y-4 my-8 max-h-[calc(100vh-4rem)] overflow-y-auto`}
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal content
       >
         <div className="flex items-center justify-between pb-3 border-b border-gray-200">
@@ -36,7 +36,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, size = 
             </svg>
           </button>
         </div>
-        <div className="modal-content overflow-y-auto max-h-[70vh]">
+        <div className="modal-content">
           {children}
         </div>
       </div>

@@ -480,9 +480,9 @@ const AnnouncementsManagement: React.FC = () => {
       {isModalOpen && currentAnnouncement && (
         <div 
           id="announcement-modal-overlay"
-          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-[100] transition-opacity duration-300 ease-in-out"
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-start justify-center p-4 z-[100] transition-opacity duration-300 ease-in-out overflow-y-auto"
         >
-          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 ease-in-out scale-100 opacity-100">
+          <div className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 ease-in-out scale-100 opacity-100 my-8 max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-semibold text-slate-800">
                 {isEditMode ? '공지사항 수정' : '새 공지사항 작성'}
@@ -492,6 +492,7 @@ const AnnouncementsManagement: React.FC = () => {
                 className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-full -mr-2"
                 aria-label="Close modal"
               >
+                <X size={24} />
               </button>
             </div>
             

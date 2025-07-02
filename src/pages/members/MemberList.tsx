@@ -79,12 +79,12 @@ const NewMemberModal: React.FC<NewMemberModalProps> = ({ isOpen, onClose, onSave
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-50 overflow-y-auto p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-2xl bg-white rounded-xl shadow-xl p-6 max-h-[90vh] overflow-y-auto"
+        className="w-full max-w-2xl bg-white rounded-xl shadow-xl p-6 max-h-[calc(100vh-4rem)] overflow-y-auto my-8"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">신규 회원 등록</h2>
