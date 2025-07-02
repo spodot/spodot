@@ -27,6 +27,9 @@ const ReportManagement = () => {
 
   // 일일 보고서 데이터 (실제 수파베이스 데이터에서 가져오기)
   const getDailyReports = () => {
+    console.log('🔍 getDailyReports 호출됨');
+    console.log('전체 reports:', reports);
+    
     return reports
       .filter(report => 
         report.type === 'daily' && 
@@ -34,9 +37,14 @@ const ReportManagement = () => {
          new Date(report.createdAt).toISOString().split('T')[0] === dailyReportFilter.date)
       )
       .map(report => {
+        console.log('📄 처리 중인 보고서:', report);
+        console.log('원본 content:', report.content);
+        
         try {
           const parsedContent = JSON.parse(report.content);
-          return {
+          console.log('✅ 파싱된 content:', parsedContent);
+          
+          const result = {
             id: report.id,
             date: new Date(report.createdAt).toISOString().split('T')[0],
             title: report.title,
@@ -47,8 +55,13 @@ const ReportManagement = () => {
             lastSaved: report.updatedAt,
             author: report.createdByName
           };
+          
+          console.log('🎯 최종 result:', result);
+          return result;
         } catch (error) {
-          console.error('보고서 파싱 오류:', error);
+          console.error('❌ 보고서 파싱 오류:', error);
+          console.log('원본 content (파싱 실패):', report.content);
+          
           return {
             id: report.id,
             date: new Date(report.createdAt).toISOString().split('T')[0],

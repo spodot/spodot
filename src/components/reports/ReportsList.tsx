@@ -379,9 +379,14 @@ const ReportsList = ({ onSelectReport }: ReportsListProps) => {
                     {report.content && (
                       <p className="text-sm text-slate-600 line-clamp-2 mb-2">
                         {(() => {
+                          // 디버깅용 로그
+                          console.log('Report content:', report.content);
+                          console.log('Report type:', typeof report.content);
+                          
                           try {
                             // JSON 문자열인지 확인하고 파싱
                             const parsedContent = JSON.parse(report.content);
+                            console.log('Parsed content:', parsedContent);
                             
                             // 일일 보고서 형태인 경우
                             if (parsedContent.완료한업무 || parsedContent.진행중인업무 || parsedContent.예정된업무) {
@@ -389,13 +394,16 @@ const ReportsList = ({ onSelectReport }: ReportsListProps) => {
                               if (parsedContent.완료한업무) parts.push(`완료: ${parsedContent.완료한업무}`);
                               if (parsedContent.진행중인업무) parts.push(`진행중: ${parsedContent.진행중인업무}`);
                               if (parsedContent.예정된업무) parts.push(`예정: ${parsedContent.예정된업무}`);
-                              return parts.join(' | ');
+                              const result = parts.join(' | ');
+                              console.log('Formatted result:', result);
+                              return result;
                             }
                             
                             // 다른 JSON 형태인 경우 첫 번째 값 표시
                             const firstValue = Object.values(parsedContent)[0];
                             return typeof firstValue === 'string' ? firstValue : JSON.stringify(parsedContent);
-                          } catch {
+                          } catch (error) {
+                            console.log('JSON parse error:', error);
                             // JSON이 아닌 경우 원본 텍스트 표시
                             return report.content;
                           }
