@@ -19,7 +19,7 @@
         // 프로덕션 환경: 엄격한 CSP 적용
         const meta = document.createElement('meta');
         meta.httpEquiv = 'Content-Security-Policy';
-        meta.content = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; worker-src 'self' blob:; frame-src 'self';";
+        meta.content = "default-src 'self' chrome-extension:; script-src 'self' 'unsafe-inline' 'unsafe-eval' chrome-extension:; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co; worker-src 'self' blob:; frame-src 'self';";
         document.head.appendChild(meta);
       }
     </script>

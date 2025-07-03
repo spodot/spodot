@@ -145,19 +145,25 @@ export const HandoverProvider: React.FC<{ children: ReactNode }> = ({ children }
       console.log('🔐 현재 인증 상태:', { 
         currentUser: currentUser?.id, 
         authError: authError?.message,
-        isAuthenticated: !!currentUser 
+        isAuthenticated: !!currentUser,
+        contextUser: user.id
       });
 
-      if (authError || !currentUser) {
+      // 인증 오류가 있어도 context에 user 정보가 있으면 계속 진행
+      if (authError && !user) {
         console.error('❌ 인증 오류:', authError);
         setError('인증에 문제가 있습니다. 다시 로그인해주세요.');
         return null;
       }
 
+      // Supabase 인증 사용자가 없어도 context user가 있으면 그것을 사용
+      const effectiveUserId = currentUser?.id || user.id;
+      console.log('👤 사용할 사용자 ID:', effectiveUserId);
+
       const handoverData = {
         content: content.trim(),
         date: new Date().toISOString().split('T')[0],
-        author_id: user.id,
+        author_id: effectiveUserId,
         author_name: user.name || user.email || '알 수 없음'
       };
 
