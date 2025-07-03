@@ -1121,6 +1121,7 @@ const EditTaskModal = ({ task, isOpen, onClose, onSave }: {
   const [startTime, setStartTime] = useState(task.startTime || '');
   const [endTime, setEndTime] = useState(task.endTime || '');
   const { hasPermission } = useAuth();
+  const { deleteTask } = useTask();
 
   if (!isOpen) {
     logger.debug('EditTaskModal: isOpen이 false라서 렌더링하지 않음');
@@ -1148,6 +1149,17 @@ const EditTaskModal = ({ task, isOpen, onClose, onSave }: {
     setDescription(task.description || '');
     setStartTime(task.startTime || '');
     setEndTime(task.endTime || '');
+  };
+
+  const handleDeleteClick = async () => {
+    if (window.confirm('이 업무를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+      try {
+        await deleteTask(task.id);
+        onClose();
+      } catch (error) {
+        console.error('업무 삭제 실패:', error);
+      }
+    }
   };
 
   const getPriorityText = (priority: TaskPriority) => {
@@ -1280,6 +1292,15 @@ const EditTaskModal = ({ task, isOpen, onClose, onSave }: {
                   >
                     <Edit size={16} />
                     <span>수정</span>
+                  </button>
+                )}
+                {hasPermission('tasks.delete') && (
+                  <button
+                    onClick={handleDeleteClick}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium flex items-center space-x-2"
+                  >
+                    <Trash2 size={16} />
+                    <span>삭제</span>
                   </button>
                 )}
                 <button
