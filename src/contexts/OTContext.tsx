@@ -343,7 +343,8 @@ export const OTProvider: React.FC<{ children: React.ReactNode }> = ({ children }
       }
     } catch (err) {
       console.error('OT 멤버 데이터 가져오기 실패:', err);
-      setError('OT 멤버를 불러오는 중 오류가 발생했습니다.');
+      // setError('OT 멤버를 불러오는 중 오류가 발생했습니다.'); // 초기 로딩 에러 메시지 제거
+      setError(null); // 에러 상태 초기화
     }
   }, []);
 

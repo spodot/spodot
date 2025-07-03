@@ -206,7 +206,8 @@ export const SuggestionProvider: React.FC<{ children: ReactNode }> = ({ children
       }
     } catch (err) {
       console.error('건의사항 데이터 가져오기 실패:', err);
-      setError('건의사항을 불러오는 중 오류가 발생했습니다.');
+      // setError('건의사항을 불러오는 중 오류가 발생했습니다.'); // 초기 로딩 에러 메시지 제거
+      setError(null); // 에러 상태 초기화
     } finally {
       setLoading(false);
     }

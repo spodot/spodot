@@ -380,7 +380,8 @@ export const ReportProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (err) {
       console.error('보고서 데이터 가져오기 실패:', err);
-      setError('보고서를 불러오는 중 오류가 발생했습니다.');
+      // setError('보고서를 불러오는 중 오류가 발생했습니다.'); // 초기 로딩 에러 메시지 제거
+      setError(null); // 에러 상태 초기화
     }
   }, [user]);
 
@@ -415,7 +416,8 @@ export const ReportProvider = ({ children }: { children: ReactNode }) => {
       }
     } catch (err) {
       console.error('템플릿 데이터 가져오기 실패:', err);
-      setError('템플릿을 불러오는 중 오류가 발생했습니다.');
+      // setError('템플릿을 불러오는 중 오류가 발생했습니다.'); // 초기 로딩 에러 메시지 제거
+      setError(null); // 에러 상태 초기화
     } finally {
       setLoading(false);
     }

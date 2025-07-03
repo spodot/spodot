@@ -75,7 +75,8 @@ export const AnnouncementProvider: React.FC<{ children: ReactNode }> = ({ childr
       }
     } catch (err) {
       console.error('Error fetching announcements:', err);
-      setError('공지사항을 불러오는 중 오류가 발생했습니다.');
+      // setError('공지사항을 불러오는 중 오류가 발생했습니다.'); // 초기 로딩 에러 메시지 제거
+      setError(null); // 에러 상태 초기화
       setAnnouncements(sampleAnnouncements);
     } finally {
       setLoading(false);

@@ -77,7 +77,8 @@ export function MemberProvider({ children }: { children: ReactNode }) {
       setError(null);
     } catch (err) {
       console.error('회원 목록 가져오기 오류:', err);
-      setError('회원 목록을 불러오는데 실패했습니다.');
+      // setError('회원 목록을 불러오는데 실패했습니다.'); // 초기 로딩 에러 메시지 제거
+      setError(null); // 에러 상태 초기화
     } finally {
       setLoading(false);
     }

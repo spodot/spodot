@@ -104,8 +104,8 @@ export class ErrorHandler {
         break;
     }
 
-    // 재시도 가능한 에러인 경우 안내
-    if (appError.retryable) {
+    // 재시도 가능한 에러인 경우 안내 (조용한 에러가 아닌 경우만)
+    if (appError.retryable && !appError.silent) {
       setTimeout(() => {
         showInfo('잠시 후 다시 시도해보세요.');
       }, 2000);
@@ -250,11 +250,12 @@ export class ErrorHandler {
   private handleGenericError(error: any, context?: Partial<AppError['context']>): AppError {
     return {
       type: 'unknown',
-      severity: 'medium',
+      severity: 'low',
       message: error.message || 'Unknown error',
       userMessage: '알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
       context: { ...context, timestamp: new Date() },
-      retryable: true
+      retryable: true,
+      silent: true // 일반 에러 알림 숨김
     };
   }
 
