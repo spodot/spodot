@@ -173,7 +173,7 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
   reception: [
     // 리셉션팀: 회원 관리, 일정 관리, 매출 관리, OT 배정 중심
     'users.view_own',
-    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
+    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.delete', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
     'announcements.read',
     'reports.create', 'reports.read', 'reports.view_department', 'reports.view_own',
     'sales.create', 'sales.read', 'sales.update', 'sales.view_all',
@@ -191,7 +191,7 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
   fitness: [
     // 피트니스팀: 회원 운동 관리, 개인 트레이닝, OT 진행
     'users.view_own',
-    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
+    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.delete', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
     'announcements.read',
     'reports.create', 'reports.read', 'reports.view_department', 'reports.view_own',
     'sales.create', 'sales.read', 'sales.view_department', 'sales.view_own',
@@ -206,7 +206,7 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
   tennis: [
     // 테니스팀: 테니스 레슨, 코트 관리
     'users.view_own',
-    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
+    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.delete', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
     'announcements.read',
     'reports.create', 'reports.read', 'reports.view_department', 'reports.view_own',
     'sales.create', 'sales.read', 'sales.view_department', 'sales.view_own',
@@ -221,7 +221,7 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
   golf: [
     // 골프팀: 골프 레슨, 연습장 관리
     'users.view_own',
-    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
+    'tasks.create', 'tasks.read', 'tasks.update', 'tasks.delete', 'tasks.view_department', 'tasks.view_assigned', 'tasks.comment',
     'announcements.read',
     'reports.create', 'reports.read', 'reports.view_department', 'reports.view_own',
     'sales.create', 'sales.read', 'sales.view_department', 'sales.view_own',
