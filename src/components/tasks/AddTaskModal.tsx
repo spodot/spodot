@@ -70,8 +70,8 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, initialDue
         priority: data.priority,
         category: data.category,
         status: 'pending', 
-        assignedTo: data.assignedTo ? [data.assignedTo] : [],
-        assignedToName: selectedStaff ? [selectedStaff.name] : [],
+        assignedTo: data.assignedTo ? [data.assignedTo] : [currentUser.id], // 담당자가 없으면 자신을 담당자로 설정
+        assignedToName: selectedStaff ? [selectedStaff.name] : [currentUser.name || 'Unknown User'], // 담당자가 없으면 자신의 이름 사용
         assignedBy: currentUser.id,
         assignedByName: currentUser.name || 'Unknown User',
       };

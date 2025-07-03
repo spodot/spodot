@@ -166,13 +166,16 @@ const MyTasks = () => {
     logger.debug('editingTask 상태 변경:', editingTask);
   }, [editingTask]);
 
-  // 현재 사용자에게 배정된 업무만 필터링
+  // 현재 사용자에게 배정된 업무 또는 자신이 생성한 업무 필터링
   const myTasks = useMemo(() => {
     if (!user) return [];
     
     return contextTasks.filter(task => {
-      // assignedTo 배열에 현재 사용자 ID가 포함되어 있는지 확인
-      return task.assignedTo && task.assignedTo.includes(user.id);
+      // assignedTo 배열에 현재 사용자 ID가 포함되어 있거나, 자신이 생성한 업무인지 확인
+      const isAssignedToMe = task.assignedTo && task.assignedTo.includes(user.id);
+      const isCreatedByMe = task.assignedBy === user.id;
+      
+      return isAssignedToMe || isCreatedByMe;
     });
   }, [contextTasks, user]);
 
