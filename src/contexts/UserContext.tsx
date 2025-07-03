@@ -329,7 +329,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // 입력 데이터 유효성 검사
       if (!staffData || !staffData.name || !staffData.email) {
         console.error('필수 데이터가 누락되었습니다:', staffData);
-        alert('이름과 이메일은 필수 입력 항목입니다.');
+        // alert('이름과 이메일은 필수 입력 항목입니다.'); // 알림 제거
         return null;
       }
       
@@ -354,20 +354,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error('직원 추가 중 오류:', error);
         const errorMessage = error.message || '알 수 없는 오류가 발생했습니다.';
-        alert('직원 추가 오류: ' + errorMessage);
+        // alert('직원 추가 오류: ' + errorMessage); // 알림 제거
         return null;
       }
 
       if (!data || !Array.isArray(data) || data.length === 0) {
         console.error('직원 추가 실패: 데이터가 반환되지 않음');
-        alert('직원 추가 실패: 데이터가 반환되지 않았습니다.');
+        // alert('직원 추가 실패: 데이터가 반환되지 않았습니다.'); // 알림 제거
         return null;
       }
 
       const newUserData = data[0];
       if (!newUserData || !newUserData.id) {
         console.error('직원 추가 실패: 유효하지 않은 데이터');
-        alert('직원 추가 실패: 유효하지 않은 데이터가 반환되었습니다.');
+        // alert('직원 추가 실패: 유효하지 않은 데이터가 반환되었습니다.'); // 알림 제거
         return null;
       }
 
@@ -393,7 +393,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('직원 추가 오류:', err);
       const errorMessage = err instanceof Error ? err.message : String(err);
-      alert('직원 추가 오류: ' + errorMessage);
+      // alert('직원 추가 오류: ' + errorMessage); // 알림 제거
       return null;
     }
   };
@@ -404,7 +404,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       // 입력 데이터 유효성 검사
       if (!id || !staffData) {
         console.error('필수 데이터가 누락되었습니다:', { id, staffData });
-        alert('직원 ID와 수정할 데이터가 필요합니다.');
+        // alert('직원 ID와 수정할 데이터가 필요합니다.'); // 알림 제거
         return false;
       }
 
@@ -433,7 +433,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error('직원 업데이트 오류:', error);
         const errorMessage = error.message || '알 수 없는 오류가 발생했습니다.';
-        alert('직원 업데이트 오류: ' + errorMessage);
+        // alert('직원 업데이트 오류: ' + errorMessage); // 알림 제거
         return false;
       }
 
@@ -455,7 +455,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('직원 수정 오류:', err);
       const errorMessage = err instanceof Error ? err.message : String(err);
-      alert('직원 수정 오류: ' + errorMessage);
+      // alert('직원 수정 오류: ' + errorMessage); // 알림 제거
       return false;
     }
   };
@@ -614,12 +614,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
       if (deleteError) {
         console.error('직원 삭제 오류:', deleteError);
         const errorMessage = deleteError.message || '직원 삭제 중 오류가 발생했습니다.';
-        alert('직원 삭제 오류: ' + errorMessage);
+        // alert('직원 삭제 오류: ' + errorMessage); // 알림 제거
         return false;
       }
 
       console.log('직원 삭제 성공:', id);
-      alert('직원이 성공적으로 삭제되었습니다.');
+      // alert('직원이 성공적으로 삭제되었습니다.'); // 알림 제거
 
       // 14. 로컬 상태에서 제거
       setStaffList(prevStaff => prevStaff.filter(staff => staff.id !== id));
@@ -631,7 +631,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('직원 삭제 오류:', err);
       const errorMessage = err instanceof Error ? err.message : String(err);
-      alert('직원 삭제 오류: ' + errorMessage);
+      // alert('직원 삭제 오류: ' + errorMessage); // 알림 제거
       return false;
     }
   };
