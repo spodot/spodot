@@ -28,13 +28,13 @@ CREATE POLICY "Users can insert handovers" ON handovers
 CREATE POLICY "Users can update own handovers" ON handovers
   FOR UPDATE 
   TO authenticated
-  USING (auth.uid()::text = author_id);
+  USING (auth.uid() = author_id::uuid);
 
 -- 사용자는 자신이 작성한 인계사항만 삭제할 수 있음
 CREATE POLICY "Users can delete own handovers" ON handovers
   FOR DELETE 
   TO authenticated
-  USING (auth.uid()::text = author_id);
+  USING (auth.uid() = author_id::uuid);
 
 -- 4. 확인 쿼리
 SELECT 
