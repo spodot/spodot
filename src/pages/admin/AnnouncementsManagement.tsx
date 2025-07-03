@@ -3,7 +3,7 @@ import { useAnnouncement } from '../../contexts/AnnouncementContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { Announcement } from '../../types/index'; 
 import { format, parseISO } from 'date-fns';
-import { Edit3, Trash2, PlusCircle, CheckSquare, Square, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { Edit3, Trash2, PlusCircle, CheckSquare, Square, Upload, X, Image as ImageIcon, AlertTriangle } from 'lucide-react';
 
 
 
@@ -22,6 +22,10 @@ const AnnouncementsManagement: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentAnnouncement, setCurrentAnnouncement] = useState<Partial<Announcement> | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  // 삭제 관련 상태
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [announcementToDelete, setAnnouncementToDelete] = useState<Announcement | null>(null);
 
   // 검색/필터 상태
   const [search, setSearch] = useState('');
@@ -279,14 +283,26 @@ const AnnouncementsManagement: React.FC = () => {
     }
   };
 
-  const handleDeleteAnnouncement = async (id: string) => {
-    if (window.confirm('정말로 이 공지사항을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
-      try {
-        await deleteAnnouncement(id);
-      } catch (deleteError) {
-        console.error('Failed to delete announcement:', deleteError);
-        alert('공지사항 삭제에 실패했습니다.'); 
-      }
+  // 삭제 모달 관련 함수들
+  const handleOpenDeleteModal = (announcement: Announcement) => {
+    setAnnouncementToDelete(announcement);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setAnnouncementToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!announcementToDelete) return;
+    
+    try {
+      await deleteAnnouncement(announcementToDelete.id);
+      handleCloseDeleteModal();
+    } catch (deleteError) {
+      console.error('Failed to delete announcement:', deleteError);
+      alert('공지사항 삭제에 실패했습니다.'); 
     }
   };
 
@@ -459,7 +475,7 @@ const AnnouncementsManagement: React.FC = () => {
                         <Edit3 size={18} />
                       </button>
                       <button 
-                        onClick={() => handleDeleteAnnouncement(announcement.id)}
+                        onClick={() => handleOpenDeleteModal(announcement)}
                         className="text-red-600 hover:text-red-800 transition-colors p-1 rounded-full hover:bg-red-100"
                         title="삭제"
                       >
@@ -668,6 +684,48 @@ const AnnouncementsManagement: React.FC = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 삭제 확인 모달 */}
+      {isDeleteModalOpen && announcementToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[110]">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex items-center mb-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="w-6 h-6 text-red-600" />
+              </div>
+              <div className="ml-4">
+                <h3 className="text-lg font-medium text-gray-900">공지사항 삭제</h3>
+                <p className="text-sm text-gray-500">이 작업은 되돌릴 수 없습니다.</p>
+              </div>
+            </div>
+            
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600 mb-1">
+                <strong>제목:</strong> {announcementToDelete.title}
+              </p>
+              <p className="text-sm text-gray-600">
+                <strong>내용:</strong> {announcementToDelete.content.substring(0, 100)}
+                {announcementToDelete.content.length > 100 && '...'}
+              </p>
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleCloseDeleteModal}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                삭제
+              </button>
+            </div>
           </div>
         </div>
       )}
