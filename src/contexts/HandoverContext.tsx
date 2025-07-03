@@ -134,12 +134,26 @@ export const HandoverProvider: React.FC<{ children: ReactNode }> = ({ children }
       return null;
     }
 
-    console.log('인계사항 추가 시도:', {
+    console.log('🔍 인계사항 추가 시도:', {
       content: content.trim(),
-      user: { id: user.id, name: user.name }
+      user: { id: user.id, name: user.name, email: user.email, role: user.role }
     });
 
     try {
+      // 먼저 현재 사용자의 인증 상태 확인
+      const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+      console.log('🔐 현재 인증 상태:', { 
+        currentUser: currentUser?.id, 
+        authError: authError?.message,
+        isAuthenticated: !!currentUser 
+      });
+
+      if (authError || !currentUser) {
+        console.error('❌ 인증 오류:', authError);
+        setError('인증에 문제가 있습니다. 다시 로그인해주세요.');
+        return null;
+      }
+
       const handoverData = {
         content: content.trim(),
         date: new Date().toISOString().split('T')[0],
@@ -147,7 +161,21 @@ export const HandoverProvider: React.FC<{ children: ReactNode }> = ({ children }
         author_name: user.name || user.email || '알 수 없음'
       };
 
-      console.log('Supabase에 삽입할 데이터:', handoverData);
+      console.log('📝 Supabase에 삽입할 데이터:', handoverData);
+
+      // 테스트를 위해 먼저 단순한 select 쿼리로 테이블 접근 확인
+      const { data: testData, error: testError } = await supabase
+        .from('handovers')
+        .select('count(*)')
+        .limit(1);
+
+      console.log('🧪 테이블 접근 테스트:', { testData, testError: testError?.message });
+
+      if (testError) {
+        console.error('❌ 테이블 접근 실패:', testError);
+        setError(`테이블 접근 오류: ${testError.message}`);
+        return null;
+      }
 
       const { data: newHandover, error: insertError } = await supabase
         .from('handovers')
@@ -156,12 +184,18 @@ export const HandoverProvider: React.FC<{ children: ReactNode }> = ({ children }
         .single();
 
       if (insertError) {
-        console.error('인계사항 추가 실패:', insertError);
+        console.error('❌ 인계사항 추가 실패:', insertError);
+        console.error('🔍 에러 상세:', {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint
+        });
         setError(`인계사항 추가 실패: ${insertError.message}`);
         return null;
       }
 
-      console.log('인계사항 추가 성공:', newHandover);
+      console.log('✅ 인계사항 추가 성공:', newHandover);
 
       if (newHandover) {
         await fetchHandovers();
@@ -171,7 +205,7 @@ export const HandoverProvider: React.FC<{ children: ReactNode }> = ({ children }
 
       return null;
     } catch (err) {
-      console.error('인계사항 추가 중 예외 발생:', err);
+      console.error('❌ 인계사항 추가 중 예외 발생:', err);
       setError(`인계사항 추가 중 오류가 발생했습니다: ${err instanceof Error ? err.message : '알 수 없는 오류'}`);
       return null;
     }
