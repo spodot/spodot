@@ -172,10 +172,13 @@ export const HandoverProvider: React.FC<{ children: ReactNode }> = ({ children }
       // 테스트를 위해 먼저 단순한 select 쿼리로 테이블 접근 확인
       const { data: testData, error: testError } = await supabase
         .from('handovers')
-        .select('count(*)')
+        .select('id')
         .limit(1);
 
-      console.log('🧪 테이블 접근 테스트:', { testData, testError: testError?.message });
+      console.log('🧪 테이블 접근 테스트:', { 
+        testData: testData?.length || 0, 
+        testError: testError?.message 
+      });
 
       if (testError) {
         console.error('❌ 테이블 접근 실패:', testError);
